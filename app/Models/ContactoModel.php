@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class ContactoModel extends Model {
     protected $table      = 'contactos';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_contacto';
     protected $allowedFields = [
         'nombre', 
         'apellido_paterno', 
@@ -15,6 +15,14 @@ class ContactoModel extends Model {
         'alias', 
         'foto_path'
     ];
+
+    protected $useAutoIncrement = true;
+    
+    protected $returnType = 'array';
+    
+    protected $useTimestamps = true;
+    protected $createdField = 'fecha_creacion';
+    protected $updatedField = 'fecha_actualizacion';
 
     public function getContactosConRelaciones() {
         $sql =
@@ -124,6 +132,25 @@ class ContactoModel extends Model {
         }
 
         return $result;
+    }
+
+    public function getContactoCompleto($id)
+    {
+        $contacto = $this->find($id);
+        if (!$contacto) return null;
+    
+        // Obtener relaciones
+        $builder = $this->builder();
+        $contacto['telefonos'] = $this->db->table('telefonos_contacto')
+            ->where('id_contacto', $id)->get()->getResultArray();
+        
+        $contacto['emails'] = $this->db->table('emails_contacto')
+            ->where('id_contacto', $id)->get()->getResultArray();
+        
+        $contacto['direcciones'] = $this->db->table('direcciones_contacto')
+            ->where('id_contacto', $id)->get()->getResultArray();
+    
+        return $contacto;
     }
 
 }

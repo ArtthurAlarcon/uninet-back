@@ -30,6 +30,7 @@ class Filters extends BaseFilters
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        // 'cors'          => Cors::class,
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
@@ -69,13 +70,11 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-            'cors' // Añade este filtro
+            'honeypot',
+            'cors' => ['before' => ['api/*']] // Aplica CORS a todas las rutas api/
         ],
         'after' => [
-            // 'honeypot',
+            'toolbar',
             // 'secureheaders',
         ],
     ];

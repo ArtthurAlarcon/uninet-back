@@ -7,10 +7,22 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
-$routes->group('api/contactos', function($routes) {
-    $routes->get('/', 'Contactos::index');          // GET → Listar básico
-    $routes->get('relaciones', 'Contactos::listarConRelaciones'); // Sin "/" al inicio
-    $routes->post('/', 'Contactos::create');        // POST → Crear
-    $routes->put('(:num)', 'Contactos::update/$1'); // PUT → Actualizar
-    $routes->delete('(:num)', 'Contactos::delete/$1'); // DELETE → Eliminar
+$routes->group('api', ['filter' => 'cors'], function($routes) {
+    // Rutas OPTIONS para preflight
+    $routes->options('contactos', function() {
+        return service('response')->setStatusCode(204);
+    });
+    $routes->options('contactos/(:any)', function() {
+        return service('response')->setStatusCode(204);
+    });
+    
+    // rutas normales
+    $routes->post('contactos', 'Contactos::create');
+    $routes->get('contactos/relaciones', 'Contactos::listarConRelaciones');
+    $routes->get('contactos/(:num)', 'Contactos::show/$1'); // Para obtener un contacto
+    $routes->post('contactos/actualizar/(:num)', 'Contactos::updateWithPost/$1');
+    $routes->delete('contactos/(:num)', 'Contactos::delete/$1');
+
+    // Nueva ruta para servir imágenes
+    $routes->get('contactos/foto/(:segment)', 'Contactos::serveImage/$1');
 });
